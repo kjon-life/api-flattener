@@ -184,7 +184,17 @@ To connect:
 ___ 
 ## Legal & Intellectual Property
 
-[WIP]
+Rua Vertex™ ℠ is a registered brand of Rua Vertex, LLC. We're innovators in management consulting and machine learning research. While we love sharing and collaborating, we need to protect our intellectual property:
+
+- Our name and brand marks are protected
+- Our methods and technologies are proprietary
+- Patents pending on our processes and systems
+- All rights reserved on our creative works
+
+For detailed information, see:
+- [WIP:  LEGAL.md](./LEGAL.md) - Complete IP notice and usage rights
+- [WIP:  PATENTS.md](./PATENTS.md) - Patent and innovation protection
+- [LICENSE](./LICENSE) - Terms of use
 
 Questions? Reach out to legal@ruavertex.com
 
