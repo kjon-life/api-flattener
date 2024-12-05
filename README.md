@@ -20,6 +20,13 @@ This is a tool for rapidly scaling and iterating on API specifications.
 
 A Python package for flattening OpenAPI specifications by resolving and inlining referenced components.
 
+## Known Issues
+
+- [ ] Correct the OpenAPI version. OpenAPI "3.1.0" is generated.
+- [ ] Correct workflow. [kjon-life/api-flattener](https://github.com/kjon-life/api-flattener/actions/runs/1011111111111111111) Test workflow run is failing.
+- [ ] Correct the license. MIT license is not correct.
+- [ ] Implement the CLI.
+
 ## Features
 
 - Resolves `$ref` components in OpenAPI/Swagger specifications

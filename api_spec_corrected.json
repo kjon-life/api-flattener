@@ -101,7 +101,6 @@
                             "enum": [
                               "MODERATION_REQUEST_TRIGGERED_V1"
                             ],
-                            "const": "MODERATION_REQUEST_TRIGGERED_V1",
                             "title": "Name"
                           },
                           "timestamp": {
@@ -125,7 +124,7 @@
                                 ]
                               },
                               {
-                                "type": "null"
+                                "type": "string"
                               }
                             ],
                             "title": "Extraeventdataversionspecifier",
@@ -180,7 +179,6 @@
                             "enum": [
                               "MODERATION_ACTION_TAKEN_V1"
                             ],
-                            "const": "MODERATION_ACTION_TAKEN_V1",
                             "title": "Name"
                           },
                           "timestamp": {
@@ -204,7 +202,7 @@
                                 ]
                               },
                               {
-                                "type": "null"
+                                "type": "string"
                               }
                             ],
                             "title": "Extraeventdataversionspecifier",
@@ -222,13 +220,10 @@
                             "anyOf": [
                               {
                                 "type": "string"
-                              },
-                              {
-                                "type": "null"
                               }
                             ],
                             "title": "Actionorigineventid",
-                            "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+                            "description": "The identifier of the specific action event in the client’s system, if available. This may be used for debugging or tracking event origin if necessary.",
                             "example": [
                               "b46119ee-c79c-4e11-885a-b1e9011e21ed"
                             ]
@@ -273,9 +268,6 @@
                               {
                                 "type": "string",
                                 "format": "uuid"
-                              },
-                              {
-                                "type": "null"
                               }
                             ],
                             "title": "Aimoddecisionid",
@@ -312,7 +304,6 @@
                             "enum": [
                               "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
                             ],
-                            "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
                             "title": "Name"
                           },
                           "timestamp": {
@@ -334,9 +325,6 @@
                                   "1.1",
                                   "1.1.0"
                                 ]
-                              },
-                              {
-                                "type": "null"
                               }
                             ],
                             "title": "Extraeventdataversionspecifier",
@@ -380,9 +368,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Subjectdataversionspecifier",
@@ -585,9 +570,6 @@
                             "detail"
                           ],
                           "title": "DecisionStatusModel"
-                        },
-                        {
-                          "type": "null"
                         }
                       ]
                     }
@@ -718,7 +700,6 @@
                             "enum": [
                               "MODERATION_REQUEST_TRIGGERED_V1"
                             ],
-                            "const": "MODERATION_REQUEST_TRIGGERED_V1",
                             "title": "Name"
                           },
                           "timestamp": {
@@ -740,9 +721,6 @@
                                   "1.1",
                                   "1.1.0"
                                 ]
-                              },
-                              {
-                                "type": "null"
                               }
                             ],
                             "title": "Extraeventdataversionspecifier",
@@ -809,9 +787,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Subjectdataversionspecifier",
@@ -1013,9 +988,6 @@
                             "detail"
                           ],
                           "title": "DecisionStatusModel"
-                        },
-                        {
-                          "type": "null"
                         }
                       ]
                     },
@@ -1148,9 +1120,6 @@
                             "modifiedTime"
                           ],
                           "title": "DecisionRecordModel"
-                        },
-                        {
-                          "type": "null"
                         }
                       ],
                       "description": "The AiMod's decision. This field is `null` if no decision is available, or if there was an issue grabbing the decision."
@@ -1230,7 +1199,6 @@
             "enum": [
               "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
             ],
-            "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
             "title": "Name"
           },
           "timestamp": {
@@ -1252,9 +1220,6 @@
                   "1.1",
                   "1.1.0"
                 ]
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Extraeventdataversionspecifier",
@@ -1539,7 +1504,6 @@
             "enum": [
               "MODERATION_ACTION_TAKEN_V1"
             ],
-            "const": "MODERATION_ACTION_TAKEN_V1",
             "title": "Name"
           },
           "timestamp": {
@@ -1561,9 +1525,6 @@
                   "1.1",
                   "1.1.0"
                 ]
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Extraeventdataversionspecifier",
@@ -1581,13 +1542,10 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Actionorigineventid",
-            "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+            "description": "The identifier of the specific action event in the client’s system, if available. This may be used for debugging or tracking event origin if necessary.",
             "example": [
               "b46119ee-c79c-4e11-885a-b1e9011e21ed"
             ]
@@ -1632,9 +1590,6 @@
               {
                 "type": "string",
                 "format": "uuid"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Aimoddecisionid",
@@ -1671,7 +1626,6 @@
             "enum": [
               "MODERATION_REQUEST_TRIGGERED_V1"
             ],
-            "const": "MODERATION_REQUEST_TRIGGERED_V1",
             "title": "Name"
           },
           "timestamp": {
@@ -1693,9 +1647,6 @@
                   "1.1",
                   "1.1.0"
                 ]
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Extraeventdataversionspecifier",
@@ -1805,9 +1756,6 @@
                   "detail"
                 ],
                 "title": "DecisionStatusModel"
-              },
-              {
-                "type": "null"
               }
             ]
           },
@@ -1940,9 +1888,6 @@
                   "modifiedTime"
                 ],
                 "title": "DecisionRecordModel"
-              },
-              {
-                "type": "null"
               }
             ],
             "description": "The AiMod's decision. This field is `null` if no decision is available, or if there was an issue grabbing the decision."
@@ -2018,9 +1963,6 @@
                   "detail"
                 ],
                 "title": "DecisionStatusModel"
-              },
-              {
-                "type": "null"
               }
             ]
           }
@@ -2059,7 +2001,6 @@
                     "enum": [
                       "MODERATION_REQUEST_TRIGGERED_V1"
                     ],
-                    "const": "MODERATION_REQUEST_TRIGGERED_V1",
                     "title": "Name"
                   },
                   "timestamp": {
@@ -2081,9 +2022,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Extraeventdataversionspecifier",
@@ -2138,7 +2076,6 @@
                     "enum": [
                       "MODERATION_ACTION_TAKEN_V1"
                     ],
-                    "const": "MODERATION_ACTION_TAKEN_V1",
                     "title": "Name"
                   },
                   "timestamp": {
@@ -2160,9 +2097,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Extraeventdataversionspecifier",
@@ -2180,13 +2114,10 @@
                     "anyOf": [
                       {
                         "type": "string"
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Actionorigineventid",
-                    "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+                    "description": "The identifier of the specific action event in the client’s system, if available. This may be used for debugging or tracking event origin if necessary.",
                     "example": [
                       "b46119ee-c79c-4e11-885a-b1e9011e21ed"
                     ]
@@ -2231,9 +2162,6 @@
                       {
                         "type": "string",
                         "format": "uuid"
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Aimoddecisionid",
@@ -2270,7 +2198,6 @@
                     "enum": [
                       "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
                     ],
-                    "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
                     "title": "Name"
                   },
                   "timestamp": {
@@ -2292,9 +2219,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Extraeventdataversionspecifier",
@@ -2338,9 +2262,6 @@
                   "1.1",
                   "1.1.0"
                 ]
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Subjectdataversionspecifier",
@@ -2499,7 +2420,6 @@
                     "enum": [
                       "MODERATION_REQUEST_TRIGGERED_V1"
                     ],
-                    "const": "MODERATION_REQUEST_TRIGGERED_V1",
                     "title": "Name"
                   },
                   "timestamp": {
@@ -2521,9 +2441,6 @@
                           "1.1",
                           "1.1.0"
                         ]
-                      },
-                      {
-                        "type": "null"
                       }
                     ],
                     "title": "Extraeventdataversionspecifier",
@@ -2590,9 +2507,6 @@
                   "1.1",
                   "1.1.0"
                 ]
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Subjectdataversionspecifier",
