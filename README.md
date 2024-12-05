@@ -14,7 +14,7 @@ This is a tool for rapidly scaling and iterating on API specifications.
 
 
 
-## 🌀  &middot; Rua Vertex   
+## 🧰  &middot; API Flattener   
  ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/kjon-life/api-flattener) 
  ![GitHub License](https://img.shields.io/github/license/kjon-life/api-flattener)
  ![GitHub top language](https://img.shields.io/github/languages/top/kjon-life/api-flattener)
