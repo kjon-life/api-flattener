@@ -5,6 +5,7 @@ description = "A Python package for flattening OpenAPI specifications by resolvi
 authors = ["Jon Williams <jon@apisec.ai>"]
 license = "Elastic License 2.0 (ELv2)"
 readme = "README.md"
+packages = [{include = "api_flattener", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -22,3 +23,6 @@ ruff = "^0.8.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+api-flatten = "api_flattener.cli.commands:cli"
