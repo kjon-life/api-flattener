@@ -42,6 +42,8 @@ poetry add api-flattener
 
 ## Usage
 
+- See [USAGE.md](USAGE.md) as this [README](README.md) is for prior release (will be updated soon).
+
 ### Command Line Interface
 
 Flatten an OpenAPI specification:
