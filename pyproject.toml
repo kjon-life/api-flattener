@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "api-flattener"
+version = "0.0.0"
+description = "A Python package for flattening OpenAPI specifications by resolving and inlining referenced components."
+authors = ["Jon Williams <jon@apisec.ai>"]
+license = "Elastic License 2.0 (ELv2)"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyyaml = "^6.0.2"
+jsonref = "^1.1.0"
+jsonschema = "^4.23.0"
+click = "^8.1.7"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+ruff = "^0.8.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
