@@ -1,0 +1,2804 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AiModerator",
+    "version": "1.1.2"
+  },
+  "paths": {
+    "/api/version": {
+      "get": {
+        "tags": [
+          "Application information"
+        ],
+        "summary": "Get version information for the application",
+        "operationId": "get_version_api_version_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "messages": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Messages",
+                      "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+                      "examples": [
+                        []
+                      ]
+                    },
+                    "appVersion": {
+                      "type": "string",
+                      "title": "Appversion",
+                      "description": "The API version",
+                      "examples": [
+                        "1.0.0"
+                      ]
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "appVersion"
+                  ],
+                  "title": "VersionResponseModel"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/moderation/events/": {
+      "post": {
+        "tags": [
+          "Moderation events"
+        ],
+        "summary": "Submit an event for processing.",
+        "description": "This endpoint currently returns mock data. An acknowledgement is returned if the event has been received by the system. Further, if the event will result in the AiMod attempting to make a decision, a decision status is returned. This decision status can then be used to check on the status of the decision. If a decision becomes available, it can then be requested.",
+        "operationId": "submit_event_api_v1_moderation_events__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "subjectType": {
+                    "type": "string",
+                    "title": "Subjecttype",
+                    "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+                    "examples": [
+                      "USER"
+                    ]
+                  },
+                  "subjectId": {
+                    "type": "string",
+                    "title": "Subjectid",
+                    "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+                    "examples": [
+                      "1234567890"
+                    ]
+                  },
+                  "eventData": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "MODERATION_REQUEST_TRIGGERED_V1"
+                            ],
+                            "const": "MODERATION_REQUEST_TRIGGERED_V1",
+                            "title": "Name"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Timestamp",
+                            "description": "The time of the event.",
+                            "examples": [
+                              "2024-12-04T18:31:05.674000+00:00"
+                            ]
+                          },
+                          "extraEventDataVersionSpecifier": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                                "examples": [
+                                  "1",
+                                  "1.1",
+                                  "1.1.0"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Extraeventdataversionspecifier",
+                            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                            "examples": [
+                              null
+                            ]
+                          },
+                          "extraEventData": {
+                            "type": "object",
+                            "title": "Extraeventdata",
+                            "description": "Any additional data to pass along with the event."
+                          },
+                          "triggerReasons": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array",
+                            "maxItems": 1,
+                            "minItems": 1,
+                            "title": "Triggerreasons",
+                            "description": "The reason(s) that moderation is being requested. The set of possible trigger reasons is decided by the client. Note that trigger reasons must be configured in the system and enabled for AiMod to agree to make a decision on them. If a specified trigger reason is not in the system or is not enabled, the event will be accepted but no decision will be made. Currently only a single trigger reason is accepted.",
+                            "examples": [
+                              [
+                                "SCAM_LIKELY"
+                              ]
+                            ]
+                          },
+                          "comments": {
+                            "type": "string",
+                            "title": "Comments",
+                            "description": "Plain-text comments describing why moderation is being requested.",
+                            "default": "",
+                            "examples": [
+                              "Directed me to a sketchy website."
+                            ]
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "timestamp",
+                          "triggerReasons"
+                        ],
+                        "title": "ModerationRequestTriggeredV1Model",
+                        "description": "Trigger AiMod to make a decision recommendation on a moderation request. This event should include all relevant info that AiMod may consider when making its decision.\nNote that moderation requests submitted in this fashion will also be used for training new iterations of the AiMod model."
+                      },
+                      {
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "MODERATION_ACTION_TAKEN_V1"
+                            ],
+                            "const": "MODERATION_ACTION_TAKEN_V1",
+                            "title": "Name"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Timestamp",
+                            "description": "The time of the event.",
+                            "examples": [
+                              "2024-12-04T18:31:05.674000+00:00"
+                            ]
+                          },
+                          "extraEventDataVersionSpecifier": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                                "examples": [
+                                  "1",
+                                  "1.1",
+                                  "1.1.0"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Extraeventdataversionspecifier",
+                            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                            "examples": [
+                              null
+                            ]
+                          },
+                          "extraEventData": {
+                            "type": "object",
+                            "title": "Extraeventdata",
+                            "description": "Any additional data to pass along with the event."
+                          },
+                          "actionOriginEventId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Actionorigineventid",
+                            "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+                            "examples": [
+                              "b46119ee-c79c-4e11-885a-b1e9011e21ed"
+                            ]
+                          },
+                          "action": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "BAN",
+                                  "APPROVE",
+                                  "UNBAN",
+                                  "WARN"
+                                ],
+                                "title": "ModerationActionEnum"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ],
+                            "title": "Action",
+                            "description": "The specific moderation action that was taken. If the action is not one of ['BAN', 'APPROVE', 'UNBAN', 'WARN'], the event will be accepted by the system but may not be processed."
+                          },
+                          "moderatorId": {
+                            "type": "string",
+                            "title": "Moderatorid",
+                            "description": "The identifier of the moderator that took this action. Each individual moderator SHOULD have a unique, consistent identifier. If the moderation action resulted from a decision made by the AiMod itself, the identifier MUST be prefixed with `musubi`.",
+                            "examples": [
+                              "qwertyuiop"
+                            ]
+                          },
+                          "moderatorSource": {
+                            "type": "string",
+                            "title": "Moderatorsource",
+                            "description": "The identifier of the moderation source. Each moderation source is a designator for a group of individual moderators, and SHOULD be unique and consistent across all action events. If the moderation action resulted from a decision made by the AiMod itself, the moderator source MUST be prefixed with `musubi`.",
+                            "examples": [
+                              "internal_mod_team"
+                            ]
+                          },
+                          "aiModDecisionId": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Aimoddecisionid",
+                            "description": "The ID of the AiMod decision record, if this action was a result of a decision made by the AiMod.",
+                            "examples": [
+                              null
+                            ]
+                          },
+                          "comments": {
+                            "type": "string",
+                            "title": "Comments",
+                            "description": "Plain-text comments describing why the action was taken.",
+                            "default": "",
+                            "examples": [
+                              "Banned."
+                            ]
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "timestamp",
+                          "action",
+                          "moderatorId",
+                          "moderatorSource"
+                        ],
+                        "title": "ModerationActionTakenV1Model",
+                        "description": "Submit a completed moderation action for the AiMod to learn from. This event should include all relevant info that the moderator could have considered when taking the action."
+                      },
+                      {
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
+                            ],
+                            "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
+                            "title": "Name"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Timestamp",
+                            "description": "The time of the event.",
+                            "examples": [
+                              "2024-12-04T18:31:05.674000+00:00"
+                            ]
+                          },
+                          "extraEventDataVersionSpecifier": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                                "examples": [
+                                  "1",
+                                  "1.1",
+                                  "1.1.0"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Extraeventdataversionspecifier",
+                            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                            "examples": [
+                              null
+                            ]
+                          },
+                          "extraEventData": {
+                            "type": "object",
+                            "title": "Extraeventdata",
+                            "description": "Any additional data to pass along with the event."
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "timestamp"
+                        ],
+                        "title": "CustomModerationDataAvailableV1Model",
+                        "description": "Submit custom data to AiMod.\n\nThis event is used to send data to AiMod when none of the other event types are suitable."
+                      }
+                    ],
+                    "title": "Eventdata",
+                    "discriminator": {
+                      "propertyName": "name",
+                      "mapping": {
+                        "CUSTOM_MODERATION_DATA_AVAILABLE_V1": "#/components/schemas/CustomModerationDataAvailableV1Model",
+                        "MODERATION_ACTION_TAKEN_V1": "#/components/schemas/ModerationActionTakenV1Model",
+                        "MODERATION_REQUEST_TRIGGERED_V1": "#/components/schemas/ModerationRequestTriggeredV1Model"
+                      }
+                    }
+                  },
+                  "subjectDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Subjectdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the subject data. If `null` is supplied, subject data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "subjectData": {
+                    "type": "object",
+                    "title": "Subjectdata",
+                    "description": "A snapshot of data available about the subject at the time of the event. The subject is the user or entity on which moderation actions are being taken.",
+                    "examples": [
+                      {
+                        "account": {
+                          "loginHistory": [
+                            {
+                              "active": false,
+                              "deviceId": "0cc618a9-1a1a-4bdc-b3ed-9fe048cb4db5",
+                              "ipv4": "120.212.25.11",
+                              "timestamp": "2024-12-01T21:43:38.693186+00:00",
+                              "userAgent": "Mozilla/5.0 (compatible; MSIE 5.0; Windows NT 5.2; Trident/5.1)"
+                            },
+                            {
+                              "active": true,
+                              "deviceId": "b5b17fe1-47ed-4e25-b9a0-e97942049fc6",
+                              "ipv4": "179.70.58.227",
+                              "timestamp": "2024-11-10T12:51:16.271432+00:00",
+                              "userAgent": "Opera/9.69.(Windows 98; Win 9x 4.90; yo-NG) Presto/2.9.172 Version/12.00"
+                            },
+                            {
+                              "active": false,
+                              "deviceId": "0283bc4d-a342-425a-bf15-89569394fdc7",
+                              "ipv4": "194.139.60.191",
+                              "timestamp": "2024-11-06T04:59:35.505401+00:00",
+                              "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:1.9.7.20) Gecko/7191-02-04 12:17:24.924896 Firefox/10.0"
+                            }
+                          ],
+                          "registrationTimestamp": "2024-11-30T21:01:38.095198+00:00",
+                          "status": "ACTIVE"
+                        },
+                        "content": {
+                          "photos": [
+                            {
+                              "description": "Rocket red-shift star supernova star reflection it.",
+                              "url": "https://placekitten.com/512/532"
+                            },
+                            {
+                              "description": "Refraction yellow yellow supernova a shiny.",
+                              "url": "https://dummyimage.com/181x750"
+                            }
+                          ],
+                          "posts": [
+                            {
+                              "content": "Check this out >>>> http://thompson.com/",
+                              "timestamp": "2024-11-25T04:10:41.327393+00:00"
+                            },
+                            {
+                              "content": "Check this out >>>> http://vega.net/",
+                              "timestamp": "2024-11-25T23:31:12.300182+00:00"
+                            },
+                            {
+                              "content": "Check this out >>>> http://burns-wagner.com/",
+                              "timestamp": "2024-11-08T17:12:15.641038+00:00"
+                            }
+                          ]
+                        },
+                        "devices": [
+                          {
+                            "id": "56b16abe-ca88-4eb6-845e-eeb0ab62cbf6",
+                            "timestamp": "2024-11-26T00:23:18.992557+00:00",
+                            "type": "laptop"
+                          },
+                          {
+                            "id": "248c9cf9-cfa6-43c6-a732-5fe8d206f023",
+                            "timestamp": "2024-12-04T16:42:13.526742+00:00",
+                            "type": "phone"
+                          }
+                        ],
+                        "flags": [
+                          {
+                            "id": "fa912a05-2d4a-4289-a2ed-4d9cc8e55372",
+                            "open": true,
+                            "reason": "SCAM",
+                            "timestamp": "2024-11-23T17:17:25.678444+00:00",
+                            "type": "received"
+                          },
+                          {
+                            "id": "b1b65656-d2d0-4c25-b72c-b6ea39ccab85",
+                            "open": false,
+                            "reason": "SCAM",
+                            "timestamp": "2024-11-06T23:05:31.255878+00:00",
+                            "type": "received"
+                          },
+                          {
+                            "id": "f29bdddc-134b-4231-8b8a-10a13d319c9c",
+                            "open": false,
+                            "reason": "BULLYING",
+                            "timestamp": "2024-11-18T02:36:44.580004+00:00",
+                            "type": "submitted"
+                          }
+                        ],
+                        "logEntries": [
+                          {
+                            "comment": "No evidence of a violation was found",
+                            "flagIds": [
+                              "b6582871-3371-4d7f-b147-66330dec22b5"
+                            ],
+                            "timestamp": "2024-11-16T06:20:33.465651+00:00",
+                            "type": "APPROVAL"
+                          }
+                        ],
+                        "misc": {},
+                        "profile": {
+                          "email": "karinabooker@example.com",
+                          "locale": "en_US",
+                          "name": "Karina Booker",
+                          "username": "karinabooker"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "subjectType",
+                  "subjectId",
+                  "eventData"
+                ],
+                "title": "SubmitModerationEventRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "messages": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Messages",
+                      "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+                      "examples": [
+                        []
+                      ]
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "Eventid"
+                    },
+                    "decisionStatus": {
+                      "anyOf": [
+                        {
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "title": "Id",
+                              "description": "The ID of the decision status. This ID can be used to request the status of the decision."
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "CREATED",
+                                "SUBMITTED",
+                                "NO_DECISION",
+                                "DONE",
+                                "ERROR"
+                              ],
+                              "title": "DecisionStatusEnum"
+                            },
+                            "detail": {
+                              "type": "string",
+                              "title": "Detail",
+                              "description": "If there is no decision available, this message may indicate why.",
+                              "examples": [
+                                ""
+                              ]
+                            }
+                          },
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "status",
+                            "detail"
+                          ],
+                          "title": "DecisionStatusModel"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "eventId",
+                    "decisionStatus"
+                  ],
+                  "title": "SubmitEventResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {
+                      "items": {
+                        "properties": {
+                          "loc": {
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "integer"
+                                }
+                              ]
+                            },
+                            "type": "array",
+                            "title": "Location"
+                          },
+                          "msg": {
+                            "type": "string",
+                            "title": "Message"
+                          },
+                          "type": {
+                            "type": "string",
+                            "title": "Error Type"
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "loc",
+                          "msg",
+                          "type"
+                        ],
+                        "title": "ValidationError"
+                      },
+                      "type": "array",
+                      "title": "Detail"
+                    }
+                  },
+                  "type": "object",
+                  "title": "HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/moderation/events/trigger": {
+      "post": {
+        "tags": [
+          "Moderation events"
+        ],
+        "summary": "Submit an event requesting an AiMod decision, and wait for that decision.",
+        "description": "This endpoint currently returns mock data. If no decision is available before the wait times out, the decision status that is returned can be used to periodically request updated information, until either the decision becomes available, or until it can be confirmed that it will not be available. **Note that even when the system is under light load, the expected latency for this endpoint is on the order of seconds**.",
+        "operationId": "decide_on_trigger_api_v1_moderation_events_trigger_post",
+        "security": [
+          {
+            "api-key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "wait",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to wait for the decision to become available.",
+              "default": true,
+              "title": "Wait"
+            },
+            "description": "Whether to wait for the decision to become available."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "subjectType": {
+                    "type": "string",
+                    "title": "Subjecttype",
+                    "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+                    "examples": [
+                      "USER"
+                    ]
+                  },
+                  "subjectId": {
+                    "type": "string",
+                    "title": "Subjectid",
+                    "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+                    "examples": [
+                      "1234567890"
+                    ]
+                  },
+                  "eventData": {
+                    "oneOf": [
+                      {
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "MODERATION_REQUEST_TRIGGERED_V1"
+                            ],
+                            "const": "MODERATION_REQUEST_TRIGGERED_V1",
+                            "title": "Name"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "title": "Timestamp",
+                            "description": "The time of the event.",
+                            "examples": [
+                              "2024-12-04T18:31:05.674000+00:00"
+                            ]
+                          },
+                          "extraEventDataVersionSpecifier": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                                "examples": [
+                                  "1",
+                                  "1.1",
+                                  "1.1.0"
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "title": "Extraeventdataversionspecifier",
+                            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                            "examples": [
+                              null
+                            ]
+                          },
+                          "extraEventData": {
+                            "type": "object",
+                            "title": "Extraeventdata",
+                            "description": "Any additional data to pass along with the event."
+                          },
+                          "triggerReasons": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array",
+                            "maxItems": 1,
+                            "minItems": 1,
+                            "title": "Triggerreasons",
+                            "description": "The reason(s) that moderation is being requested. The set of possible trigger reasons is decided by the client. Note that trigger reasons must be configured in the system and enabled for AiMod to agree to make a decision on them. If a specified trigger reason is not in the system or is not enabled, the event will be accepted but no decision will be made. Currently only a single trigger reason is accepted.",
+                            "examples": [
+                              [
+                                "SCAM_LIKELY"
+                              ]
+                            ]
+                          },
+                          "comments": {
+                            "type": "string",
+                            "title": "Comments",
+                            "description": "Plain-text comments describing why moderation is being requested.",
+                            "default": "",
+                            "examples": [
+                              "Directed me to a sketchy website."
+                            ]
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "timestamp",
+                          "triggerReasons"
+                        ],
+                        "title": "ModerationRequestTriggeredV1Model",
+                        "description": "Trigger AiMod to make a decision recommendation on a moderation request. This event should include all relevant info that AiMod may consider when making its decision.\nNote that moderation requests submitted in this fashion will also be used for training new iterations of the AiMod model."
+                      }
+                    ],
+                    "title": "Eventdata",
+                    "discriminator": {
+                      "propertyName": "name",
+                      "mapping": {
+                        "MODERATION_REQUEST_TRIGGERED_V1": "#/components/schemas/ModerationRequestTriggeredV1Model"
+                      }
+                    }
+                  },
+                  "subjectDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Subjectdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the subject data. If `null` is supplied, subject data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "subjectData": {
+                    "type": "object",
+                    "title": "Subjectdata",
+                    "description": "A snapshot of data available about the subject at the time of the event. The subject is the user or entity on which moderation actions are being taken.",
+                    "examples": [
+                      {
+                        "account": {
+                          "loginHistory": [
+                            {
+                              "active": false,
+                              "deviceId": "0cc618a9-1a1a-4bdc-b3ed-9fe048cb4db5",
+                              "ipv4": "120.212.25.11",
+                              "timestamp": "2024-12-01T21:43:38.693186+00:00",
+                              "userAgent": "Mozilla/5.0 (compatible; MSIE 5.0; Windows NT 5.2; Trident/5.1)"
+                            },
+                            {
+                              "active": true,
+                              "deviceId": "b5b17fe1-47ed-4e25-b9a0-e97942049fc6",
+                              "ipv4": "179.70.58.227",
+                              "timestamp": "2024-11-10T12:51:16.271432+00:00",
+                              "userAgent": "Opera/9.69.(Windows 98; Win 9x 4.90; yo-NG) Presto/2.9.172 Version/12.00"
+                            },
+                            {
+                              "active": false,
+                              "deviceId": "0283bc4d-a342-425a-bf15-89569394fdc7",
+                              "ipv4": "194.139.60.191",
+                              "timestamp": "2024-11-06T04:59:35.505401+00:00",
+                              "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:1.9.7.20) Gecko/7191-02-04 12:17:24.924896 Firefox/10.0"
+                            }
+                          ],
+                          "registrationTimestamp": "2024-11-30T21:01:38.095198+00:00",
+                          "status": "ACTIVE"
+                        },
+                        "content": {
+                          "photos": [
+                            {
+                              "description": "Rocket red-shift star supernova star reflection it.",
+                              "url": "https://placekitten.com/512/532"
+                            },
+                            {
+                              "description": "Refraction yellow yellow supernova a shiny.",
+                              "url": "https://dummyimage.com/181x750"
+                            }
+                          ],
+                          "posts": [
+                            {
+                              "content": "Check this out >>>> http://thompson.com/",
+                              "timestamp": "2024-11-25T04:10:41.327393+00:00"
+                            },
+                            {
+                              "content": "Check this out >>>> http://vega.net/",
+                              "timestamp": "2024-11-25T23:31:12.300182+00:00"
+                            },
+                            {
+                              "content": "Check this out >>>> http://burns-wagner.com/",
+                              "timestamp": "2024-11-08T17:12:15.641038+00:00"
+                            }
+                          ]
+                        },
+                        "devices": [
+                          {
+                            "id": "56b16abe-ca88-4eb6-845e-eeb0ab62cbf6",
+                            "timestamp": "2024-11-26T00:23:18.992557+00:00",
+                            "type": "laptop"
+                          },
+                          {
+                            "id": "248c9cf9-cfa6-43c6-a732-5fe8d206f023",
+                            "timestamp": "2024-12-04T16:42:13.526742+00:00",
+                            "type": "phone"
+                          }
+                        ],
+                        "flags": [
+                          {
+                            "id": "fa912a05-2d4a-4289-a2ed-4d9cc8e55372",
+                            "open": true,
+                            "reason": "SCAM",
+                            "timestamp": "2024-11-23T17:17:25.678444+00:00",
+                            "type": "received"
+                          },
+                          {
+                            "id": "b1b65656-d2d0-4c25-b72c-b6ea39ccab85",
+                            "open": false,
+                            "reason": "SCAM",
+                            "timestamp": "2024-11-06T23:05:31.255878+00:00",
+                            "type": "received"
+                          },
+                          {
+                            "id": "f29bdddc-134b-4231-8b8a-10a13d319c9c",
+                            "open": false,
+                            "reason": "BULLYING",
+                            "timestamp": "2024-11-18T02:36:44.580004+00:00",
+                            "type": "submitted"
+                          }
+                        ],
+                        "logEntries": [
+                          {
+                            "comment": "No evidence of a violation was found",
+                            "flagIds": [
+                              "b6582871-3371-4d7f-b147-66330dec22b5"
+                            ],
+                            "timestamp": "2024-11-16T06:20:33.465651+00:00",
+                            "type": "APPROVAL"
+                          }
+                        ],
+                        "misc": {},
+                        "profile": {
+                          "email": "karinabooker@example.com",
+                          "locale": "en_US",
+                          "name": "Karina Booker",
+                          "username": "karinabooker"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "subjectType",
+                  "subjectId",
+                  "eventData"
+                ],
+                "title": "SubmitModerationTriggerEventRequestModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "messages": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Messages",
+                      "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+                      "examples": [
+                        []
+                      ]
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "Eventid"
+                    },
+                    "decisionStatus": {
+                      "anyOf": [
+                        {
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "title": "Id",
+                              "description": "The ID of the decision status. This ID can be used to request the status of the decision."
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "CREATED",
+                                "SUBMITTED",
+                                "NO_DECISION",
+                                "DONE",
+                                "ERROR"
+                              ],
+                              "title": "DecisionStatusEnum"
+                            },
+                            "detail": {
+                              "type": "string",
+                              "title": "Detail",
+                              "description": "If there is no decision available, this message may indicate why.",
+                              "examples": [
+                                ""
+                              ]
+                            }
+                          },
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "status",
+                            "detail"
+                          ],
+                          "title": "DecisionStatusModel"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "decision": {
+                      "anyOf": [
+                        {
+                          "properties": {
+                            "subjectType": {
+                              "type": "string",
+                              "title": "Subjecttype",
+                              "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+                              "examples": [
+                                "USER"
+                              ]
+                            },
+                            "subjectId": {
+                              "type": "string",
+                              "title": "Subjectid",
+                              "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+                              "examples": [
+                                "1234567890"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "title": "Id"
+                            },
+                            "triggerId": {
+                              "type": "string",
+                              "format": "uuid",
+                              "title": "Triggerid"
+                            },
+                            "triggerTime": {
+                              "type": "string",
+                              "title": "Triggertime",
+                              "examples": [
+                                "2024-12-04T18:31:05.674000+00:00"
+                              ]
+                            },
+                            "triggerReasons": {
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array",
+                              "title": "Triggerreasons",
+                              "examples": [
+                                [
+                                  "SCAM_LIKELY"
+                                ]
+                              ]
+                            },
+                            "decisionType": {
+                              "properties": {
+                                "value": {
+                                  "type": "string",
+                                  "enum": [
+                                    "APPROVE",
+                                    "SKIP",
+                                    "BAN"
+                                  ],
+                                  "title": "DecisionTypeEnum"
+                                }
+                              },
+                              "type": "object",
+                              "required": [
+                                "value"
+                              ],
+                              "title": "DecisionTypeModel"
+                            },
+                            "comments": {
+                              "type": "string",
+                              "title": "Comments"
+                            },
+                            "holdout": {
+                              "type": "boolean",
+                              "title": "Holdout"
+                            },
+                            "sent": {
+                              "type": "boolean",
+                              "title": "Sent"
+                            },
+                            "completed": {
+                              "type": "boolean",
+                              "title": "Completed"
+                            },
+                            "debug": {
+                              "type": "boolean",
+                              "title": "Debug"
+                            },
+                            "inference": {
+                              "type": "object",
+                              "title": "Inference",
+                              "examples": [
+                                {
+                                  "riskScore": 98.881
+                                }
+                              ]
+                            },
+                            "createdTime": {
+                              "type": "string",
+                              "title": "Createdtime",
+                              "examples": [
+                                "2024-12-04T18:31:05.674000+00:00"
+                              ]
+                            },
+                            "modifiedTime": {
+                              "type": "string",
+                              "title": "Modifiedtime",
+                              "examples": [
+                                "2024-12-04T18:31:05.674000+00:00"
+                              ]
+                            }
+                          },
+                          "type": "object",
+                          "required": [
+                            "subjectType",
+                            "subjectId",
+                            "id",
+                            "triggerId",
+                            "triggerTime",
+                            "triggerReasons",
+                            "comments",
+                            "holdout",
+                            "sent",
+                            "completed",
+                            "debug",
+                            "inference",
+                            "createdTime",
+                            "modifiedTime"
+                          ],
+                          "title": "DecisionRecordModel"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "The AiMod's decision. This field is `null` if no decision is available, or if there was an issue grabbing the decision."
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "eventId",
+                    "decisionStatus",
+                    "decision"
+                  ],
+                  "title": "SubmitEventAndDecideOnTriggerResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {
+                      "items": {
+                        "properties": {
+                          "loc": {
+                            "items": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "integer"
+                                }
+                              ]
+                            },
+                            "type": "array",
+                            "title": "Location"
+                          },
+                          "msg": {
+                            "type": "string",
+                            "title": "Message"
+                          },
+                          "type": {
+                            "type": "string",
+                            "title": "Error Type"
+                          }
+                        },
+                        "type": "object",
+                        "required": [
+                          "loc",
+                          "msg",
+                          "type"
+                        ],
+                        "title": "ValidationError"
+                      },
+                      "type": "array",
+                      "title": "Detail"
+                    }
+                  },
+                  "type": "object",
+                  "title": "HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CustomModerationDataAvailableV1Model": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
+            ],
+            "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
+            "title": "Name"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "The time of the event.",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          },
+          "extraEventDataVersionSpecifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                "examples": [
+                  "1",
+                  "1.1",
+                  "1.1.0"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraeventdataversionspecifier",
+            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+            "examples": [
+              null
+            ]
+          },
+          "extraEventData": {
+            "type": "object",
+            "title": "Extraeventdata",
+            "description": "Any additional data to pass along with the event."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "timestamp"
+        ],
+        "title": "CustomModerationDataAvailableV1Model",
+        "description": "Submit custom data to AiMod.\n\nThis event is used to send data to AiMod when none of the other event types are suitable."
+      },
+      "DecisionRecordModel": {
+        "properties": {
+          "subjectType": {
+            "type": "string",
+            "title": "Subjecttype",
+            "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+            "examples": [
+              "USER"
+            ]
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid",
+            "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+            "examples": [
+              "1234567890"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "triggerId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Triggerid"
+          },
+          "triggerTime": {
+            "type": "string",
+            "title": "Triggertime",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          },
+          "triggerReasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Triggerreasons",
+            "examples": [
+              [
+                "SCAM_LIKELY"
+              ]
+            ]
+          },
+          "decisionType": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "enum": [
+                  "APPROVE",
+                  "SKIP",
+                  "BAN"
+                ],
+                "title": "DecisionTypeEnum"
+              }
+            },
+            "type": "object",
+            "required": [
+              "value"
+            ],
+            "title": "DecisionTypeModel"
+          },
+          "comments": {
+            "type": "string",
+            "title": "Comments"
+          },
+          "holdout": {
+            "type": "boolean",
+            "title": "Holdout"
+          },
+          "sent": {
+            "type": "boolean",
+            "title": "Sent"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          },
+          "debug": {
+            "type": "boolean",
+            "title": "Debug"
+          },
+          "inference": {
+            "type": "object",
+            "title": "Inference",
+            "examples": [
+              {
+                "riskScore": 98.881
+              }
+            ]
+          },
+          "createdTime": {
+            "type": "string",
+            "title": "Createdtime",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          },
+          "modifiedTime": {
+            "type": "string",
+            "title": "Modifiedtime",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "subjectType",
+          "subjectId",
+          "id",
+          "triggerId",
+          "triggerTime",
+          "triggerReasons",
+          "comments",
+          "holdout",
+          "sent",
+          "completed",
+          "debug",
+          "inference",
+          "createdTime",
+          "modifiedTime"
+        ],
+        "title": "DecisionRecordModel"
+      },
+      "DecisionStatusEnum": {
+        "type": "string",
+        "enum": [
+          "CREATED",
+          "SUBMITTED",
+          "NO_DECISION",
+          "DONE",
+          "ERROR"
+        ],
+        "title": "DecisionStatusEnum"
+      },
+      "DecisionStatusModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "The ID of the decision status. This ID can be used to request the status of the decision."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "SUBMITTED",
+              "NO_DECISION",
+              "DONE",
+              "ERROR"
+            ],
+            "title": "DecisionStatusEnum"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "If there is no decision available, this message may indicate why.",
+            "examples": [
+              ""
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "detail"
+        ],
+        "title": "DecisionStatusModel"
+      },
+      "DecisionTypeEnum": {
+        "type": "string",
+        "enum": [
+          "APPROVE",
+          "SKIP",
+          "BAN"
+        ],
+        "title": "DecisionTypeEnum"
+      },
+      "DecisionTypeModel": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "SKIP",
+              "BAN"
+            ],
+            "title": "DecisionTypeEnum"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "DecisionTypeModel"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "properties": {
+                "loc": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      }
+                    ]
+                  },
+                  "type": "array",
+                  "title": "Location"
+                },
+                "msg": {
+                  "type": "string",
+                  "title": "Message"
+                },
+                "type": {
+                  "type": "string",
+                  "title": "Error Type"
+                }
+              },
+              "type": "object",
+              "required": [
+                "loc",
+                "msg",
+                "type"
+              ],
+              "title": "ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ModerationActionEnum": {
+        "type": "string",
+        "enum": [
+          "BAN",
+          "APPROVE",
+          "UNBAN",
+          "WARN"
+        ],
+        "title": "ModerationActionEnum"
+      },
+      "ModerationActionTakenV1Model": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "MODERATION_ACTION_TAKEN_V1"
+            ],
+            "const": "MODERATION_ACTION_TAKEN_V1",
+            "title": "Name"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "The time of the event.",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          },
+          "extraEventDataVersionSpecifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                "examples": [
+                  "1",
+                  "1.1",
+                  "1.1.0"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraeventdataversionspecifier",
+            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+            "examples": [
+              null
+            ]
+          },
+          "extraEventData": {
+            "type": "object",
+            "title": "Extraeventdata",
+            "description": "Any additional data to pass along with the event."
+          },
+          "actionOriginEventId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actionorigineventid",
+            "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+            "examples": [
+              "b46119ee-c79c-4e11-885a-b1e9011e21ed"
+            ]
+          },
+          "action": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "BAN",
+                  "APPROVE",
+                  "UNBAN",
+                  "WARN"
+                ],
+                "title": "ModerationActionEnum"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Action",
+            "description": "The specific moderation action that was taken. If the action is not one of ['BAN', 'APPROVE', 'UNBAN', 'WARN'], the event will be accepted by the system but may not be processed."
+          },
+          "moderatorId": {
+            "type": "string",
+            "title": "Moderatorid",
+            "description": "The identifier of the moderator that took this action. Each individual moderator SHOULD have a unique, consistent identifier. If the moderation action resulted from a decision made by the AiMod itself, the identifier MUST be prefixed with `musubi`.",
+            "examples": [
+              "qwertyuiop"
+            ]
+          },
+          "moderatorSource": {
+            "type": "string",
+            "title": "Moderatorsource",
+            "description": "The identifier of the moderation source. Each moderation source is a designator for a group of individual moderators, and SHOULD be unique and consistent across all action events. If the moderation action resulted from a decision made by the AiMod itself, the moderator source MUST be prefixed with `musubi`.",
+            "examples": [
+              "internal_mod_team"
+            ]
+          },
+          "aiModDecisionId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aimoddecisionid",
+            "description": "The ID of the AiMod decision record, if this action was a result of a decision made by the AiMod.",
+            "examples": [
+              null
+            ]
+          },
+          "comments": {
+            "type": "string",
+            "title": "Comments",
+            "description": "Plain-text comments describing why the action was taken.",
+            "default": "",
+            "examples": [
+              "Banned."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "timestamp",
+          "action",
+          "moderatorId",
+          "moderatorSource"
+        ],
+        "title": "ModerationActionTakenV1Model",
+        "description": "Submit a completed moderation action for the AiMod to learn from. This event should include all relevant info that the moderator could have considered when taking the action."
+      },
+      "ModerationRequestTriggeredV1Model": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "MODERATION_REQUEST_TRIGGERED_V1"
+            ],
+            "const": "MODERATION_REQUEST_TRIGGERED_V1",
+            "title": "Name"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "The time of the event.",
+            "examples": [
+              "2024-12-04T18:31:05.674000+00:00"
+            ]
+          },
+          "extraEventDataVersionSpecifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                "examples": [
+                  "1",
+                  "1.1",
+                  "1.1.0"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraeventdataversionspecifier",
+            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+            "examples": [
+              null
+            ]
+          },
+          "extraEventData": {
+            "type": "object",
+            "title": "Extraeventdata",
+            "description": "Any additional data to pass along with the event."
+          },
+          "triggerReasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 1,
+            "minItems": 1,
+            "title": "Triggerreasons",
+            "description": "The reason(s) that moderation is being requested. The set of possible trigger reasons is decided by the client. Note that trigger reasons must be configured in the system and enabled for AiMod to agree to make a decision on them. If a specified trigger reason is not in the system or is not enabled, the event will be accepted but no decision will be made. Currently only a single trigger reason is accepted.",
+            "examples": [
+              [
+                "SCAM_LIKELY"
+              ]
+            ]
+          },
+          "comments": {
+            "type": "string",
+            "title": "Comments",
+            "description": "Plain-text comments describing why moderation is being requested.",
+            "default": "",
+            "examples": [
+              "Directed me to a sketchy website."
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "timestamp",
+          "triggerReasons"
+        ],
+        "title": "ModerationRequestTriggeredV1Model",
+        "description": "Trigger AiMod to make a decision recommendation on a moderation request. This event should include all relevant info that AiMod may consider when making its decision.\nNote that moderation requests submitted in this fashion will also be used for training new iterations of the AiMod model."
+      },
+      "SubmitEventAndDecideOnTriggerResponseModel": {
+        "properties": {
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+            "examples": [
+              []
+            ]
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "decisionStatus": {
+            "anyOf": [
+              {
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "title": "Id",
+                    "description": "The ID of the decision status. This ID can be used to request the status of the decision."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "CREATED",
+                      "SUBMITTED",
+                      "NO_DECISION",
+                      "DONE",
+                      "ERROR"
+                    ],
+                    "title": "DecisionStatusEnum"
+                  },
+                  "detail": {
+                    "type": "string",
+                    "title": "Detail",
+                    "description": "If there is no decision available, this message may indicate why.",
+                    "examples": [
+                      ""
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "id",
+                  "status",
+                  "detail"
+                ],
+                "title": "DecisionStatusModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "properties": {
+                  "subjectType": {
+                    "type": "string",
+                    "title": "Subjecttype",
+                    "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+                    "examples": [
+                      "USER"
+                    ]
+                  },
+                  "subjectId": {
+                    "type": "string",
+                    "title": "Subjectid",
+                    "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+                    "examples": [
+                      "1234567890"
+                    ]
+                  },
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "title": "Id"
+                  },
+                  "triggerId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "title": "Triggerid"
+                  },
+                  "triggerTime": {
+                    "type": "string",
+                    "title": "Triggertime",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "triggerReasons": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "title": "Triggerreasons",
+                    "examples": [
+                      [
+                        "SCAM_LIKELY"
+                      ]
+                    ]
+                  },
+                  "decisionType": {
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "enum": [
+                          "APPROVE",
+                          "SKIP",
+                          "BAN"
+                        ],
+                        "title": "DecisionTypeEnum"
+                      }
+                    },
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "title": "DecisionTypeModel"
+                  },
+                  "comments": {
+                    "type": "string",
+                    "title": "Comments"
+                  },
+                  "holdout": {
+                    "type": "boolean",
+                    "title": "Holdout"
+                  },
+                  "sent": {
+                    "type": "boolean",
+                    "title": "Sent"
+                  },
+                  "completed": {
+                    "type": "boolean",
+                    "title": "Completed"
+                  },
+                  "debug": {
+                    "type": "boolean",
+                    "title": "Debug"
+                  },
+                  "inference": {
+                    "type": "object",
+                    "title": "Inference",
+                    "examples": [
+                      {
+                        "riskScore": 98.881
+                      }
+                    ]
+                  },
+                  "createdTime": {
+                    "type": "string",
+                    "title": "Createdtime",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "modifiedTime": {
+                    "type": "string",
+                    "title": "Modifiedtime",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "subjectType",
+                  "subjectId",
+                  "id",
+                  "triggerId",
+                  "triggerTime",
+                  "triggerReasons",
+                  "comments",
+                  "holdout",
+                  "sent",
+                  "completed",
+                  "debug",
+                  "inference",
+                  "createdTime",
+                  "modifiedTime"
+                ],
+                "title": "DecisionRecordModel"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The AiMod's decision. This field is `null` if no decision is available, or if there was an issue grabbing the decision."
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "decisionStatus",
+          "decision"
+        ],
+        "title": "SubmitEventAndDecideOnTriggerResponseModel"
+      },
+      "SubmitEventResponseModel": {
+        "properties": {
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+            "examples": [
+              []
+            ]
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Eventid"
+          },
+          "decisionStatus": {
+            "anyOf": [
+              {
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "title": "Id",
+                    "description": "The ID of the decision status. This ID can be used to request the status of the decision."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "CREATED",
+                      "SUBMITTED",
+                      "NO_DECISION",
+                      "DONE",
+                      "ERROR"
+                    ],
+                    "title": "DecisionStatusEnum"
+                  },
+                  "detail": {
+                    "type": "string",
+                    "title": "Detail",
+                    "description": "If there is no decision available, this message may indicate why.",
+                    "examples": [
+                      ""
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "id",
+                  "status",
+                  "detail"
+                ],
+                "title": "DecisionStatusModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "eventId",
+          "decisionStatus"
+        ],
+        "title": "SubmitEventResponseModel"
+      },
+      "SubmitModerationEventRequestModel": {
+        "properties": {
+          "subjectType": {
+            "type": "string",
+            "title": "Subjecttype",
+            "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+            "examples": [
+              "USER"
+            ]
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid",
+            "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+            "examples": [
+              "1234567890"
+            ]
+          },
+          "eventData": {
+            "oneOf": [
+              {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "MODERATION_REQUEST_TRIGGERED_V1"
+                    ],
+                    "const": "MODERATION_REQUEST_TRIGGERED_V1",
+                    "title": "Name"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Timestamp",
+                    "description": "The time of the event.",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "extraEventDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Extraeventdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "extraEventData": {
+                    "type": "object",
+                    "title": "Extraeventdata",
+                    "description": "Any additional data to pass along with the event."
+                  },
+                  "triggerReasons": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "title": "Triggerreasons",
+                    "description": "The reason(s) that moderation is being requested. The set of possible trigger reasons is decided by the client. Note that trigger reasons must be configured in the system and enabled for AiMod to agree to make a decision on them. If a specified trigger reason is not in the system or is not enabled, the event will be accepted but no decision will be made. Currently only a single trigger reason is accepted.",
+                    "examples": [
+                      [
+                        "SCAM_LIKELY"
+                      ]
+                    ]
+                  },
+                  "comments": {
+                    "type": "string",
+                    "title": "Comments",
+                    "description": "Plain-text comments describing why moderation is being requested.",
+                    "default": "",
+                    "examples": [
+                      "Directed me to a sketchy website."
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "name",
+                  "timestamp",
+                  "triggerReasons"
+                ],
+                "title": "ModerationRequestTriggeredV1Model",
+                "description": "Trigger AiMod to make a decision recommendation on a moderation request. This event should include all relevant info that AiMod may consider when making its decision.\nNote that moderation requests submitted in this fashion will also be used for training new iterations of the AiMod model."
+              },
+              {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "MODERATION_ACTION_TAKEN_V1"
+                    ],
+                    "const": "MODERATION_ACTION_TAKEN_V1",
+                    "title": "Name"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Timestamp",
+                    "description": "The time of the event.",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "extraEventDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Extraeventdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "extraEventData": {
+                    "type": "object",
+                    "title": "Extraeventdata",
+                    "description": "Any additional data to pass along with the event."
+                  },
+                  "actionOriginEventId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Actionorigineventid",
+                    "description": "The identifier of the specific action event in the client\u2019s system, if available. This may be used for debugging or tracking event origin if necessary.",
+                    "examples": [
+                      "b46119ee-c79c-4e11-885a-b1e9011e21ed"
+                    ]
+                  },
+                  "action": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "BAN",
+                          "APPROVE",
+                          "UNBAN",
+                          "WARN"
+                        ],
+                        "title": "ModerationActionEnum"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "title": "Action",
+                    "description": "The specific moderation action that was taken. If the action is not one of ['BAN', 'APPROVE', 'UNBAN', 'WARN'], the event will be accepted by the system but may not be processed."
+                  },
+                  "moderatorId": {
+                    "type": "string",
+                    "title": "Moderatorid",
+                    "description": "The identifier of the moderator that took this action. Each individual moderator SHOULD have a unique, consistent identifier. If the moderation action resulted from a decision made by the AiMod itself, the identifier MUST be prefixed with `musubi`.",
+                    "examples": [
+                      "qwertyuiop"
+                    ]
+                  },
+                  "moderatorSource": {
+                    "type": "string",
+                    "title": "Moderatorsource",
+                    "description": "The identifier of the moderation source. Each moderation source is a designator for a group of individual moderators, and SHOULD be unique and consistent across all action events. If the moderation action resulted from a decision made by the AiMod itself, the moderator source MUST be prefixed with `musubi`.",
+                    "examples": [
+                      "internal_mod_team"
+                    ]
+                  },
+                  "aiModDecisionId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Aimoddecisionid",
+                    "description": "The ID of the AiMod decision record, if this action was a result of a decision made by the AiMod.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "comments": {
+                    "type": "string",
+                    "title": "Comments",
+                    "description": "Plain-text comments describing why the action was taken.",
+                    "default": "",
+                    "examples": [
+                      "Banned."
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "name",
+                  "timestamp",
+                  "action",
+                  "moderatorId",
+                  "moderatorSource"
+                ],
+                "title": "ModerationActionTakenV1Model",
+                "description": "Submit a completed moderation action for the AiMod to learn from. This event should include all relevant info that the moderator could have considered when taking the action."
+              },
+              {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "CUSTOM_MODERATION_DATA_AVAILABLE_V1"
+                    ],
+                    "const": "CUSTOM_MODERATION_DATA_AVAILABLE_V1",
+                    "title": "Name"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Timestamp",
+                    "description": "The time of the event.",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "extraEventDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Extraeventdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "extraEventData": {
+                    "type": "object",
+                    "title": "Extraeventdata",
+                    "description": "Any additional data to pass along with the event."
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "name",
+                  "timestamp"
+                ],
+                "title": "CustomModerationDataAvailableV1Model",
+                "description": "Submit custom data to AiMod.\n\nThis event is used to send data to AiMod when none of the other event types are suitable."
+              }
+            ],
+            "title": "Eventdata",
+            "discriminator": {
+              "propertyName": "name",
+              "mapping": {
+                "CUSTOM_MODERATION_DATA_AVAILABLE_V1": "#/components/schemas/CustomModerationDataAvailableV1Model",
+                "MODERATION_ACTION_TAKEN_V1": "#/components/schemas/ModerationActionTakenV1Model",
+                "MODERATION_REQUEST_TRIGGERED_V1": "#/components/schemas/ModerationRequestTriggeredV1Model"
+              }
+            }
+          },
+          "subjectDataVersionSpecifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                "examples": [
+                  "1",
+                  "1.1",
+                  "1.1.0"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subjectdataversionspecifier",
+            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the subject data. If `null` is supplied, subject data will not be validated.",
+            "examples": [
+              null
+            ]
+          },
+          "subjectData": {
+            "type": "object",
+            "title": "Subjectdata",
+            "description": "A snapshot of data available about the subject at the time of the event. The subject is the user or entity on which moderation actions are being taken.",
+            "examples": [
+              {
+                "account": {
+                  "loginHistory": [
+                    {
+                      "active": false,
+                      "deviceId": "0cc618a9-1a1a-4bdc-b3ed-9fe048cb4db5",
+                      "ipv4": "120.212.25.11",
+                      "timestamp": "2024-12-01T21:43:38.693186+00:00",
+                      "userAgent": "Mozilla/5.0 (compatible; MSIE 5.0; Windows NT 5.2; Trident/5.1)"
+                    },
+                    {
+                      "active": true,
+                      "deviceId": "b5b17fe1-47ed-4e25-b9a0-e97942049fc6",
+                      "ipv4": "179.70.58.227",
+                      "timestamp": "2024-11-10T12:51:16.271432+00:00",
+                      "userAgent": "Opera/9.69.(Windows 98; Win 9x 4.90; yo-NG) Presto/2.9.172 Version/12.00"
+                    },
+                    {
+                      "active": false,
+                      "deviceId": "0283bc4d-a342-425a-bf15-89569394fdc7",
+                      "ipv4": "194.139.60.191",
+                      "timestamp": "2024-11-06T04:59:35.505401+00:00",
+                      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:1.9.7.20) Gecko/7191-02-04 12:17:24.924896 Firefox/10.0"
+                    }
+                  ],
+                  "registrationTimestamp": "2024-11-30T21:01:38.095198+00:00",
+                  "status": "ACTIVE"
+                },
+                "content": {
+                  "photos": [
+                    {
+                      "description": "Rocket red-shift star supernova star reflection it.",
+                      "url": "https://placekitten.com/512/532"
+                    },
+                    {
+                      "description": "Refraction yellow yellow supernova a shiny.",
+                      "url": "https://dummyimage.com/181x750"
+                    }
+                  ],
+                  "posts": [
+                    {
+                      "content": "Check this out >>>> http://thompson.com/",
+                      "timestamp": "2024-11-25T04:10:41.327393+00:00"
+                    },
+                    {
+                      "content": "Check this out >>>> http://vega.net/",
+                      "timestamp": "2024-11-25T23:31:12.300182+00:00"
+                    },
+                    {
+                      "content": "Check this out >>>> http://burns-wagner.com/",
+                      "timestamp": "2024-11-08T17:12:15.641038+00:00"
+                    }
+                  ]
+                },
+                "devices": [
+                  {
+                    "id": "56b16abe-ca88-4eb6-845e-eeb0ab62cbf6",
+                    "timestamp": "2024-11-26T00:23:18.992557+00:00",
+                    "type": "laptop"
+                  },
+                  {
+                    "id": "248c9cf9-cfa6-43c6-a732-5fe8d206f023",
+                    "timestamp": "2024-12-04T16:42:13.526742+00:00",
+                    "type": "phone"
+                  }
+                ],
+                "flags": [
+                  {
+                    "id": "fa912a05-2d4a-4289-a2ed-4d9cc8e55372",
+                    "open": true,
+                    "reason": "SCAM",
+                    "timestamp": "2024-11-23T17:17:25.678444+00:00",
+                    "type": "received"
+                  },
+                  {
+                    "id": "b1b65656-d2d0-4c25-b72c-b6ea39ccab85",
+                    "open": false,
+                    "reason": "SCAM",
+                    "timestamp": "2024-11-06T23:05:31.255878+00:00",
+                    "type": "received"
+                  },
+                  {
+                    "id": "f29bdddc-134b-4231-8b8a-10a13d319c9c",
+                    "open": false,
+                    "reason": "BULLYING",
+                    "timestamp": "2024-11-18T02:36:44.580004+00:00",
+                    "type": "submitted"
+                  }
+                ],
+                "logEntries": [
+                  {
+                    "comment": "No evidence of a violation was found",
+                    "flagIds": [
+                      "b6582871-3371-4d7f-b147-66330dec22b5"
+                    ],
+                    "timestamp": "2024-11-16T06:20:33.465651+00:00",
+                    "type": "APPROVAL"
+                  }
+                ],
+                "misc": {},
+                "profile": {
+                  "email": "karinabooker@example.com",
+                  "locale": "en_US",
+                  "name": "Karina Booker",
+                  "username": "karinabooker"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "subjectType",
+          "subjectId",
+          "eventData"
+        ],
+        "title": "SubmitModerationEventRequestModel"
+      },
+      "SubmitModerationTriggerEventRequestModel": {
+        "properties": {
+          "subjectType": {
+            "type": "string",
+            "title": "Subjecttype",
+            "description": "The subject type. If the submitted subject type is unknown to the system, the event will be accepted but may not be processed. The subject is the user or entity on which moderation actions are being taken.",
+            "examples": [
+              "USER"
+            ]
+          },
+          "subjectId": {
+            "type": "string",
+            "title": "Subjectid",
+            "description": "The unique identifier for the specific instance of the subject. If this identifier is sensitive information, it is best to anonymize it before submitting it.",
+            "examples": [
+              "1234567890"
+            ]
+          },
+          "eventData": {
+            "oneOf": [
+              {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "MODERATION_REQUEST_TRIGGERED_V1"
+                    ],
+                    "const": "MODERATION_REQUEST_TRIGGERED_V1",
+                    "title": "Name"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "title": "Timestamp",
+                    "description": "The time of the event.",
+                    "examples": [
+                      "2024-12-04T18:31:05.674000+00:00"
+                    ]
+                  },
+                  "extraEventDataVersionSpecifier": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                        "examples": [
+                          "1",
+                          "1.1",
+                          "1.1.0"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "title": "Extraeventdataversionspecifier",
+                    "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the extra event data. If `null` is supplied, extra event data will not be validated.",
+                    "examples": [
+                      null
+                    ]
+                  },
+                  "extraEventData": {
+                    "type": "object",
+                    "title": "Extraeventdata",
+                    "description": "Any additional data to pass along with the event."
+                  },
+                  "triggerReasons": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "title": "Triggerreasons",
+                    "description": "The reason(s) that moderation is being requested. The set of possible trigger reasons is decided by the client. Note that trigger reasons must be configured in the system and enabled for AiMod to agree to make a decision on them. If a specified trigger reason is not in the system or is not enabled, the event will be accepted but no decision will be made. Currently only a single trigger reason is accepted.",
+                    "examples": [
+                      [
+                        "SCAM_LIKELY"
+                      ]
+                    ]
+                  },
+                  "comments": {
+                    "type": "string",
+                    "title": "Comments",
+                    "description": "Plain-text comments describing why moderation is being requested.",
+                    "default": "",
+                    "examples": [
+                      "Directed me to a sketchy website."
+                    ]
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "name",
+                  "timestamp",
+                  "triggerReasons"
+                ],
+                "title": "ModerationRequestTriggeredV1Model",
+                "description": "Trigger AiMod to make a decision recommendation on a moderation request. This event should include all relevant info that AiMod may consider when making its decision.\nNote that moderation requests submitted in this fashion will also be used for training new iterations of the AiMod model."
+              }
+            ],
+            "title": "Eventdata",
+            "discriminator": {
+              "propertyName": "name",
+              "mapping": {
+                "MODERATION_REQUEST_TRIGGERED_V1": "#/components/schemas/ModerationRequestTriggeredV1Model"
+              }
+            }
+          },
+          "subjectDataVersionSpecifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A fully or partially specified semantic version string. Build and pre-releases are not allowed.",
+                "examples": [
+                  "1",
+                  "1.1",
+                  "1.1.0"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subjectdataversionspecifier",
+            "description": "If a partially specified semantic version string is supplied (e.g. `1` or `1.1`), the latest version that matches that version specifier will be used to validate the subject data. If `null` is supplied, subject data will not be validated.",
+            "examples": [
+              null
+            ]
+          },
+          "subjectData": {
+            "type": "object",
+            "title": "Subjectdata",
+            "description": "A snapshot of data available about the subject at the time of the event. The subject is the user or entity on which moderation actions are being taken.",
+            "examples": [
+              {
+                "account": {
+                  "loginHistory": [
+                    {
+                      "active": false,
+                      "deviceId": "0cc618a9-1a1a-4bdc-b3ed-9fe048cb4db5",
+                      "ipv4": "120.212.25.11",
+                      "timestamp": "2024-12-01T21:43:38.693186+00:00",
+                      "userAgent": "Mozilla/5.0 (compatible; MSIE 5.0; Windows NT 5.2; Trident/5.1)"
+                    },
+                    {
+                      "active": true,
+                      "deviceId": "b5b17fe1-47ed-4e25-b9a0-e97942049fc6",
+                      "ipv4": "179.70.58.227",
+                      "timestamp": "2024-11-10T12:51:16.271432+00:00",
+                      "userAgent": "Opera/9.69.(Windows 98; Win 9x 4.90; yo-NG) Presto/2.9.172 Version/12.00"
+                    },
+                    {
+                      "active": false,
+                      "deviceId": "0283bc4d-a342-425a-bf15-89569394fdc7",
+                      "ipv4": "194.139.60.191",
+                      "timestamp": "2024-11-06T04:59:35.505401+00:00",
+                      "userAgent": "Mozilla/5.0 (X11; Linux x86_64; rv:1.9.7.20) Gecko/7191-02-04 12:17:24.924896 Firefox/10.0"
+                    }
+                  ],
+                  "registrationTimestamp": "2024-11-30T21:01:38.095198+00:00",
+                  "status": "ACTIVE"
+                },
+                "content": {
+                  "photos": [
+                    {
+                      "description": "Rocket red-shift star supernova star reflection it.",
+                      "url": "https://placekitten.com/512/532"
+                    },
+                    {
+                      "description": "Refraction yellow yellow supernova a shiny.",
+                      "url": "https://dummyimage.com/181x750"
+                    }
+                  ],
+                  "posts": [
+                    {
+                      "content": "Check this out >>>> http://thompson.com/",
+                      "timestamp": "2024-11-25T04:10:41.327393+00:00"
+                    },
+                    {
+                      "content": "Check this out >>>> http://vega.net/",
+                      "timestamp": "2024-11-25T23:31:12.300182+00:00"
+                    },
+                    {
+                      "content": "Check this out >>>> http://burns-wagner.com/",
+                      "timestamp": "2024-11-08T17:12:15.641038+00:00"
+                    }
+                  ]
+                },
+                "devices": [
+                  {
+                    "id": "56b16abe-ca88-4eb6-845e-eeb0ab62cbf6",
+                    "timestamp": "2024-11-26T00:23:18.992557+00:00",
+                    "type": "laptop"
+                  },
+                  {
+                    "id": "248c9cf9-cfa6-43c6-a732-5fe8d206f023",
+                    "timestamp": "2024-12-04T16:42:13.526742+00:00",
+                    "type": "phone"
+                  }
+                ],
+                "flags": [
+                  {
+                    "id": "fa912a05-2d4a-4289-a2ed-4d9cc8e55372",
+                    "open": true,
+                    "reason": "SCAM",
+                    "timestamp": "2024-11-23T17:17:25.678444+00:00",
+                    "type": "received"
+                  },
+                  {
+                    "id": "b1b65656-d2d0-4c25-b72c-b6ea39ccab85",
+                    "open": false,
+                    "reason": "SCAM",
+                    "timestamp": "2024-11-06T23:05:31.255878+00:00",
+                    "type": "received"
+                  },
+                  {
+                    "id": "f29bdddc-134b-4231-8b8a-10a13d319c9c",
+                    "open": false,
+                    "reason": "BULLYING",
+                    "timestamp": "2024-11-18T02:36:44.580004+00:00",
+                    "type": "submitted"
+                  }
+                ],
+                "logEntries": [
+                  {
+                    "comment": "No evidence of a violation was found",
+                    "flagIds": [
+                      "b6582871-3371-4d7f-b147-66330dec22b5"
+                    ],
+                    "timestamp": "2024-11-16T06:20:33.465651+00:00",
+                    "type": "APPROVAL"
+                  }
+                ],
+                "misc": {},
+                "profile": {
+                  "email": "karinabooker@example.com",
+                  "locale": "en_US",
+                  "name": "Karina Booker",
+                  "username": "karinabooker"
+                }
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "subjectType",
+          "subjectId",
+          "eventData"
+        ],
+        "title": "SubmitModerationTriggerEventRequestModel"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VersionResponseModel": {
+        "properties": {
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Messages to be used for informational purposes. These may include warning messages, deprecation messages, or other useful information about the request.",
+            "examples": [
+              []
+            ]
+          },
+          "appVersion": {
+            "type": "string",
+            "title": "Appversion",
+            "description": "The API version",
+            "examples": [
+              "1.0.0"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "appVersion"
+        ],
+        "title": "VersionResponseModel"
+      }
+    },
+    "securitySchemes": {
+      "api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Musubi-Api-Key"
+      }
+    }
+  }
+}
